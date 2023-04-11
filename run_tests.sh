@@ -4,7 +4,7 @@
 # VUT FIT 2023
 
 # Prolog executable
-PROLOG=flp22-log
+PROLOG=./flp22-log
 
 # Test directory
 TEST_DIR=tests

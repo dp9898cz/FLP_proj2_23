@@ -14,5 +14,8 @@ clean:
 	rm -rf $(EXECUTABLE) $(ZIPNAME)
 
 #todo
-zip:
+zip: all
 	zip -r $(ZIPNAME) $(EXECUTABLE).pl Makefile 
+
+test: all
+	./run_tests.sh
