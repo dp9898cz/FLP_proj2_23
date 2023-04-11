@@ -8,14 +8,13 @@ EXECUTABLE = flp22-log
 ZIPNAME = flp-log-xpatek08.zip
 
 all: 
-	$(COMPILER) -g main -o $(EXECUTABLE) -c $(EXECUTABLE).pl
+	$(COMPILER) -O -q -g main -o $(EXECUTABLE) -c $(EXECUTABLE).pl
 
 clean:
 	rm -rf $(EXECUTABLE) $(ZIPNAME)
 
-#todo
 zip: all
-	zip -r $(ZIPNAME) $(EXECUTABLE).pl Makefile 
+	zip -r $(ZIPNAME) $(EXECUTABLE).pl Makefile README.md run_tests.sh tests
 
 test: all
 	./run_tests.sh
