@@ -2,10 +2,13 @@
 % VUT FIT 2023
 
 main :- 
-    read_lines(Lines), 
-    last(Lines, Tape),
-
-    write(Lines), 
+    read_lines(Lines), % get lines from stdin
+    last(Lines, StartTape), % last line should be tape
+    append(['S'], StartTape, Tape), % move start state to the tape
+    delete(Lines, StartTape, StartRules), % delete tape from rules list
+    parseRules(StartRules, Rules), % parse rules to usable form
+    writeln(Rules), 
+    writeln(Tape), 
     halt.
 
 
@@ -31,3 +34,15 @@ read_line(Line) :-
         (isEOF(CurrentChar) ; isEOL(CurrentChar)) -> Line = [] ; % if EOF or /n is encountered, end recursion
         read_line(RestLine), Line = [CurrentChar | RestLine]
     ).
+
+% parse rules to usable form (remove spaces)
+parseRules(Lines, Rules) :-
+    Lines == [] -> Rules = [] ;
+    [Line | RestLines] = Lines,
+    parseRule(Line, Rule),
+    parseRules(RestLines, RestRules),
+    Rules = [Rule | RestRules].
+
+% parse one rule (remove spaces from input basically)
+parseRule([CurrentState, ' ', CurrentChar, ' ', NewState, ' ', Action], Rule) :-
+    Rule = [CurrentState, CurrentChar, NewState, Action].
