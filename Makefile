@@ -2,7 +2,6 @@
 # author: Daniel Patek (xpatek08)
 # VUT FIT 2023
 
-# Prolog compiler
 COMPILER = swipl
 EXECUTABLE = flp22-log
 ZIPNAME = flp-log-xpatek08.zip
