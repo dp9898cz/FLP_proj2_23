@@ -54,52 +54,77 @@ parseRule([CurrentState, ' ', CurrentChar, ' ', NewState, ' ', Action], Rule) :-
 % Start the simulation with the specified rules and tape
 run_tm(Rules, Tape, CSequence) :-
     tm_step(Rules, Tape, [], 'S', Sequence), % start the simulation
+    write("FINAL"),
+    writeln("Sequence"),
     append([Tape], Sequence, CSequence). % append the starting Tape to the list
 
 % Simulate one step of the TM
-tm_step(_, Tape, Visited, State, _) :-
+/* tm_step(_, Tape, Visited, State, _) :-
     % If we've already visited this state and tape, abort
-    member((State, Tape), Visited), !, fail.
+    member((State, Tape), Visited), writeln("VISITED"), !, fail. */
 
-tm_step(_, _, _, 'F', Sequence) :-
-    Sequence = [], ! .
-
+tm_step(_, _, _, 'F', Sequence) :- Sequence = [], ! .
 tm_step(Rules, Tape, Visited, State, Sequence) :-
+    writeln(""),
+    writeln("NEXT ITERATION"),
+    writeln(""),
     append(Visited, [(State, Tape)], NewVisited), % Mark this state and tape as visited
     find_poss_rule(State, Tape, Rules, CurrentRule), % find rule that can be used
-    
     %writeln(CurrentRule), % todo what if this returns 0 -> reject
+
     
     nth0(2, CurrentRule, NewState),
     nth0(3, CurrentRule, Action),
 
+
     perform_action(Action, Tape, State, TempTape), % perform specific action
 
-    nth0(StateIndex, Tape, State), % get index of State
+
+    nth0(StateIndex, TempTape, State), % get index of State
+
     replace(TempTape, StateIndex, NewState, NewTape), % change current state
 
-    %writeln(NewTape),
+    write("Selected Rule: "),
+    writeln(CurrentRule),
+    write("NewState: "),
+    writeln(NewState),
+    write("Action: "),
+    writeln(Action),
+    write("StateIndex: "),
+    writeln(StateIndex),
+    write("OldTape: "),
+    writeln(Tape),
+    write("TempTape: "),
+    writeln(TempTape),
+    write("NewTape: "),
+    writeln(NewTape),
     
     tm_step(Rules, NewTape, NewVisited, NewState, SequenceNext), % Simulate the next step with the new tape and state */
     Sequence = [NewTape|SequenceNext].
 
-tm_step(Rules, _, _, State, _) :-
-    % If there are no applicable rules, reject
-    \+ member((State, _, _, _), Rules), State = reject.
-
 % Replace an element in a list at a specified index
 % OldList, Index, NewElem, NewList
 replace([_|T], 0, X, [X|T]).
-replace([H|T], I, X, [H|R]):- I > -1, NI is I-1, replace(T, NI, X, R), !.
-replace(L, _, _, L).
+replace([H|T], I, X, [H|R]) :- I > 0, NI is I-1, replace(T, NI, X, R), !.
 
 % swap two elements in a list, given their indices
 swap(List, Index1, Index2, Result) :-
     nth0(Index1, List, Temp1),
     nth0(Index2, List, Temp2),
     replace(List, Index1, Temp2, TempList),
-    replace(TempList, Index2, Temp1, Result).
+    write("SWAP: i1 - "),
+    write(Index1),
+    write(" t1 - "),
+    write(Temp1),
+    write(" i2 - "),
+    write(Index2),
+    write(" t2 - "),
+    writeln(Temp2),
+    write("SWAP: "),
+    writeln(TempList),
 
+    replace(TempList, Index2, Temp1, Result),
+    writeln(Result).
 
 % find possible rule with current state and character in tape
 find_poss_rule(State, Tape, Rules, Result) :-
@@ -120,14 +145,24 @@ find_poss_rule(State, Tape, Rules, Result) :-
 /* Perform the specified tape action (L, R, or character change) 
 */
 perform_action('L', Tape, State, NewTape) :- 
+    writeln("LEFT"),
     nth0(StateIndex, Tape, State),
     CharacterIndex is StateIndex - 1,
     swap(Tape, StateIndex, CharacterIndex, NewTape).
 perform_action('R', Tape, State, NewTape) :- 
+    writeln("RIGHT"),
     nth0(StateIndex, Tape, State),
     CharacterIndex is StateIndex + 1,
-    swap(Tape, StateIndex, CharacterIndex, NewTape).
+    length(Tape, Len),
+    EndIndex is Len - 1,
+    (CharacterIndex == EndIndex -> append(Tape, [' '], TempTape);
+    TempTape = Tape),
+    swap(TempTape, StateIndex, CharacterIndex, NewTape).
 perform_action(Character, Tape, State, NewTape) :- 
+    Character \= 'R',
+    Character \= 'L',
+    write("Write Action: "),
+    writeln(Character),
     nth0(StateIndex, Tape, State),
     CharacterIndex is StateIndex + 1, 
     replace(Tape, CharacterIndex, Character, NewTape).
