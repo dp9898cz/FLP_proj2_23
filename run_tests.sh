@@ -51,4 +51,7 @@ done
 # Print the results
 echo "======================="
 echo -e "${GREEN}Tests passed: $PASS"
-echo -e "${RED}Tests failed: $FAIL"
+if [[ $FAIL -ne 0 ]] 
+    then
+        echo -e "${RED}Tests failed: $FAIL"
+fi
