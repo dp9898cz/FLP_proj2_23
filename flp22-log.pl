@@ -34,13 +34,16 @@ read_line(Line) :-
         read_line(RestLine), Line = [CurrentChar | RestLine]
     ).
 
+/* Writes final sequence without newline end.
+*/
 writeSequence([]).
 writeSequence([Sequence|RestSequence]) :- 
     format("~s", [Sequence]),
     ( RestSequence \= [] -> nl ; true ),
     writeSequence(RestSequence).
 
-% parse rules to usable form (remove spaces)
+/* parse rules to usable form (remove spaces)
+*/
 parseRules(Lines, Rules) :-
     Lines == [] -> Rules = [] ;
     [Line | RestLines] = Lines,
@@ -115,7 +118,7 @@ perform_action('R', Tape, State, NewTape) :-
     CharacterIndex is StateIndex + 1,
     length(Tape, Len),
     EndIndex is Len - 1,
-    (CharacterIndex == EndIndex -> append(Tape, [' '], TempTape);
+    (CharacterIndex == EndIndex -> append(Tape, [' '], TempTape); % simulates empty character at the end of tape
     TempTape = Tape),
     swap(TempTape, StateIndex, CharacterIndex, NewTape).
 
